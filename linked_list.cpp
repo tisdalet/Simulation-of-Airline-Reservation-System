@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include <linked_list.h>
+#include "linked_list.h"
 using namespace std;
 
 linked_list::linked_list(){
@@ -41,10 +41,10 @@ bool linked_list::insert_in_order(node* temp) {
         head = temp;
         return true;
     }
-    else if (head->data > temp->data){
+    else if (head->seat > temp->seat){
         prev = head;
         curr = head->next;
-        while (curr != NULL && curr->data < temp->data) {
+        while (curr != NULL && curr->seat < temp->seat) {
             prev = curr;
             curr = curr->next;
         }
@@ -52,56 +52,58 @@ bool linked_list::insert_in_order(node* temp) {
         prev->next = temp;
         return true;
     }
+    
+  return false;    
 }
 
 bool linked_list::search(int key) {
-    if (head == NULL) {
-        cout << "List is empty." << endl;
-        return false;
+    if (head == nullptr) {
+        return false; // List is empty, no need to search
     }
-    else if (head->data == key){
-        cout << "Found it at first node." << endl;
-        return true;
+    
+    node* temp = head;
+    while (temp != nullptr) {
+        if (temp->id == key) {
+            curr = temp; 
+            return true; // Key found
+        }
+        temp = temp->next;
     }
-    else {
-        prev = head;
-        curr = head->next;
-        while (curr != NULL && curr->data != key) {
-            prev = curr;
-            curr = curr->next;
-            cnt++;
-        }
-        if (curr == NULL) {
-            return false;
-        }
-        else {
-            cout << "Found it at " << cnt << endl;
-            return true; 
-        }
-    }
+    
+    return false; // Key not found
 }
 
 bool linked_list::delete_node(node* temp) {
-    if (head == NULL) {
-        return false;
-    }
-    else if (head->data == temp->data) {
-        node* del = head;
-        head = head->next;
-        delete del;
-        return true;
-    }
-    else {
-        if (search(temp->data)) {
-            prev->next = curr->next;
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+    if (head == NULL)
+	{
+		return false;
+	}
+	else if(head->id == temp->id)
+	{
+		node* del;
+		del = head;
+		head = head -> next;
+		delete del;
+	}
+	else{
+		node* prev, *curr;
+		prev = head;
+		curr = head->next;
+		while ( curr != NULL && curr->id != temp->id)
+		{
+			prev = curr;
+			curr = curr -> next;
+		}
+		if (curr != NULL)
+		{
+			prev->next = curr -> next;
+			return true;
+		}
+		else
+			return false;
+	}
+ return false;	
 }
-
 int linked_list::size_list(){
     if (head == NULL) {
         return 0;
@@ -123,8 +125,35 @@ void linked_list::print_list() {
     else {
         node* temp = head;
         while (temp != NULL){
-            cout << temp->data << " ";
+            cout << temp->first<< " ";
             temp = temp->next;
         }
     }
+    
+}
+void linked_list::copy_list(linked_list& new_list) {
+    if (head == nullptr) { // If list is empty
+        cout << "List is empty. Cannot copy." << endl;
+        return;
+    }
+
+    node* temp = head;
+    while (temp != nullptr) { // For the length of original list
+        node* new_node = new node(temp->id, temp->first, temp->last, temp->food, temp->seat); // Make new node
+        
+        if (new_list.head == nullptr) { // Make first node the head
+            new_list.head = new_node;
+        } 
+        else {
+            node* last_node = new_list.head; // Starting at head
+            while (last_node->next != nullptr) { // Find last node
+                last_node = last_node->next;
+            }
+            last_node->next = new_node; // Add the new node
+        }
+        
+        temp = temp->next; // Go to next node in temp
+    }
+    
+    new_list.cnt = this->cnt;
 }
